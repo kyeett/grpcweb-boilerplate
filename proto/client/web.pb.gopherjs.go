@@ -10,6 +10,8 @@
 		proto/web.proto
 
 	It has these top-level messages:
+		PlayerID
+		Empty
 */
 package client
 
@@ -25,6 +27,117 @@ import (
 // is compatible with the jspb package it is being compiled against.
 const _ = jspb.JspbPackageIsVersion2
 
+type PlayerID struct {
+	ID string
+}
+
+// GetID gets the ID of the PlayerID.
+func (m *PlayerID) GetID() (x string) {
+	if m == nil {
+		return x
+	}
+	return m.ID
+}
+
+// MarshalToWriter marshals PlayerID to the provided writer.
+func (m *PlayerID) MarshalToWriter(writer jspb.Writer) {
+	if m == nil {
+		return
+	}
+
+	if len(m.ID) > 0 {
+		writer.WriteString(1, m.ID)
+	}
+
+	return
+}
+
+// Marshal marshals PlayerID to a slice of bytes.
+func (m *PlayerID) Marshal() []byte {
+	writer := jspb.NewWriter()
+	m.MarshalToWriter(writer)
+	return writer.GetResult()
+}
+
+// UnmarshalFromReader unmarshals a PlayerID from the provided reader.
+func (m *PlayerID) UnmarshalFromReader(reader jspb.Reader) *PlayerID {
+	for reader.Next() {
+		if m == nil {
+			m = &PlayerID{}
+		}
+
+		switch reader.GetFieldNumber() {
+		case 1:
+			m.ID = reader.ReadString()
+		default:
+			reader.SkipField()
+		}
+	}
+
+	return m
+}
+
+// Unmarshal unmarshals a PlayerID from a slice of bytes.
+func (m *PlayerID) Unmarshal(rawBytes []byte) (*PlayerID, error) {
+	reader := jspb.NewReader(rawBytes)
+
+	m = m.UnmarshalFromReader(reader)
+
+	if err := reader.Err(); err != nil {
+		return nil, err
+	}
+
+	return m, nil
+}
+
+type Empty struct {
+}
+
+// MarshalToWriter marshals Empty to the provided writer.
+func (m *Empty) MarshalToWriter(writer jspb.Writer) {
+	if m == nil {
+		return
+	}
+
+	return
+}
+
+// Marshal marshals Empty to a slice of bytes.
+func (m *Empty) Marshal() []byte {
+	writer := jspb.NewWriter()
+	m.MarshalToWriter(writer)
+	return writer.GetResult()
+}
+
+// UnmarshalFromReader unmarshals a Empty from the provided reader.
+func (m *Empty) UnmarshalFromReader(reader jspb.Reader) *Empty {
+	for reader.Next() {
+		if m == nil {
+			m = &Empty{}
+		}
+
+		switch reader.GetFieldNumber() {
+		default:
+			reader.SkipField()
+		}
+	}
+
+	return m
+}
+
+// Unmarshal unmarshals a Empty from a slice of bytes.
+func (m *Empty) Unmarshal(rawBytes []byte) (*Empty, error) {
+	reader := jspb.NewReader(rawBytes)
+
+	m = m.UnmarshalFromReader(reader)
+
+	if err := reader.Err(); err != nil {
+		return nil, err
+	}
+
+	return m, nil
+}
+
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
 var _ grpcweb.Client
@@ -35,9 +148,8 @@ const _ = grpcweb.GrpcWebPackageIsVersion3
 
 // Client API for Backend service
 
-// Backend defines the interface exposed by the backend.
-// TODO: Define functionality exposed by backend.
 type BackendClient interface {
+	NewPlayer(ctx context.Context, in *Empty, opts ...grpcweb.CallOption) (*PlayerID, error)
 }
 
 type backendClient struct {
@@ -49,4 +161,13 @@ func NewBackendClient(hostname string, opts ...grpcweb.DialOption) BackendClient
 	return &backendClient{
 		client: grpcweb.NewClient(hostname, "web.Backend", opts...),
 	}
+}
+
+func (c *backendClient) NewPlayer(ctx context.Context, in *Empty, opts ...grpcweb.CallOption) (*PlayerID, error) {
+	resp, err := c.client.RPCCall(ctx, "NewPlayer", in.Marshal(), opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	return new(PlayerID).Unmarshal(resp)
 }

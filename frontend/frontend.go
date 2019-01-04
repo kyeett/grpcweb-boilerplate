@@ -1,11 +1,13 @@
 package main
 
 import (
+	"context"
+	"log"
 	"strings"
 
 	"honnef.co/go/js/dom"
 
-	"github.com/johanbrandhorst/grpcweb-boilerplate/proto/client"
+	"github.com/kyeett/grpcweb-boilerplate/proto/client"
 )
 
 // Build this snippet with GopherJS, minimize the output and
@@ -13,7 +15,7 @@ import (
 //go:generate gopherjs build frontend.go -m -o html/frontend.js
 
 // Zopfli compress static files.
-//go:generate find ./html/ -name *.gz -prune -o -type f -exec go-zopfli {} +
+////go:generate find ./html/ -name *.gz -prune -o -type f -exec go-zopfli {} +
 
 // Integrate generated JS into a Go file for static loading.
 //go:generate bash -c "go run assets_generate.go"
@@ -38,8 +40,17 @@ func setup() {
 	// when creating clients.
 	serverAddr := strings.TrimSuffix(document.BaseURI(), "/")
 
+	serverAddr = "http://localhost:10000"
 	// TODO: Use functions exposed by generated interface
-	_ = client.NewBackendClient(serverAddr)
+	log.Println(serverAddr)
+	clas := client.NewBackendClient(serverAddr)
 
 	document.Body().SetInnerHTML(`<div><h2>GopherJS gRPC-Web is great!</h2></div>`)
+
+	resp, err := clas.NewPlayer(context.Background(), &client.Empty{})
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println(resp, "YAY mf")
+
 }

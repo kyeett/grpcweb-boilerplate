@@ -6,10 +6,24 @@ package web;
 import "github.com/johanbrandhorst/protobuf/proto/gopherjs.proto";
 
 // Define the package locations the generated files will go into
-option (gopherjs.gopherjs_package) = "github.com/johanbrandhorst/grpcweb-boilerplate/proto/client";
-option go_package = "github.com/johanbrandhorst/grpcweb-boilerplate/proto/server";
+option (gopherjs.gopherjs_package) = "github.com/kyeett/grpcweb-boilerplate/proto/client";
+option go_package = "github.com/kyeett/grpcweb-boilerplate/proto/server";
 
 // Backend defines the interface exposed by the backend.
 // TODO: Define functionality exposed by backend.
-service Backend {
+
+message PlayerID {
+    string ID = 1;
 }
+
+
+message Empty {
+}
+
+
+
+service Backend {
+    rpc NewPlayer(Empty) returns (PlayerID) {}
+    // rpc PerformAction(ActionRequest) returns (ActionRequest) {}
+}
+
