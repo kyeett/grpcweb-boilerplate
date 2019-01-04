@@ -4,6 +4,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"log"
 	"net/http"
 	"path"
@@ -12,13 +13,11 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
-	"github.com/lpar/gzipped"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
 
 	"github.com/kyeett/grpcweb-boilerplate/backend"
-	"github.com/kyeett/grpcweb-boilerplate/frontend/bundle"
 	"github.com/kyeett/grpcweb-boilerplate/proto/server"
 )
 
@@ -79,7 +78,7 @@ func main() {
 		} else {
 			log.Println("Serve files!", req)
 			// Serve the GopherJS client
-			folderReader(gzipped.FileServer(bundle.Assets)).ServeHTTP(resp, req)
+			// folderReader(gzipped.FileServer(bundle.Assets)).ServeHTTP(resp, req)
 		}
 	}
 
@@ -88,15 +87,15 @@ func main() {
 		Addr:    addr,
 		Handler: http.HandlerFunc(handler),
 		// Some security settings
-		// ReadHeaderTimeout: 5 * time.Second,
-		// IdleTimeout:       120 * time.Second,
-		// TLSConfig: &tls.Config{
-		// 	PreferServerCipherSuites: true,
-		// 	CurvePreferences: []tls.CurveID{
-		// 		tls.CurveP256,
-		// 		tls.X25519,
-		// 	},
-		// },
+		ReadHeaderTimeout: 5 * time.Second,
+		IdleTimeout:       120 * time.Second,
+		TLSConfig: &tls.Config{
+			PreferServerCipherSuites: true,
+			CurvePreferences: []tls.CurveID{
+				tls.CurveP256,
+				tls.X25519,
+			},
+		},
 	}
 
 	logger.Info("Serving on https://" + addr)
